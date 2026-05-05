@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS50's Introduction to Programming with Python — Study Notes</title>
+
+
+<style>
+/* ── CS50 DESIGN SYSTEM ─────────────────────────────── */
+:root {
+  --cs50-red:      #c0392b;
+  --cs50-red-dark: #922b21;
+  --cs50-red-lite: #f9ebea;
+  --cs50-red-mid:  #e74c3c;
+  --black:    #1a1a1a;
+  --gray-900: #212529;
+  --gray-700: #495057;
+  --gray-500: #6c757d;
+  --gray-300: #ced4da;
+  --gray-200: #e9ecef;
+  --gray-100: #f8f9fa;
+  --white:    #ffffff;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Courier New', Consolas, 'Lucida Console', monospace;
+  --sidebar-w: 240px;
+  --topbar-h: 52px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gray-900);
+  background: var(--white);
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h);
+  background: var(--cs50-red);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 200;
+  gap: 12px;
+}
+.topbar-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.topbar-logo span { font-weight: 300; opacity: 0.85; }
+.topbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.3); margin: 0 4px; }
+.topbar-course { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 400; }
+.topbar-right { margin-left: auto; font-size: 12px; color: rgba(255,255,255,0.65); font-style: italic; }
+
+/* ── LAYOUT ── */
+.layout {
+  display: flex;
+  padding-top: var(--topbar-h);
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--gray-100);
+  border-right: 1px solid var(--gray-300);
+  position: fixed;
+  top: var(--topbar-h);
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 2px; }
+
+.sidebar-section { padding: 16px 0 8px; }
+.sidebar-heading {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  padding: 0 18px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--gray-200); }
+.nav-item.active {
+  background: var(--cs50-red-lite);
+  border-left-color: var(--cs50-red);
+}
+.nav-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gray-300);
+  color: var(--gray-700);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.nav-item.active .nav-num { background: var(--cs50-red); color: var(--white); }
+.nav-text { font-size: 13px; color: var(--gray-700); line-height: 1.3; }
+.nav-sub  { font-size: 11px; color: var(--gray-500); }
+.nav-item.active .nav-text { color: var(--cs50-red-dark); font-weight: 500; }
+
+.sidebar-divider { height: 1px; background: var(--gray-300); margin: 8px 18px; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 44px 56px 80px;
+  max-width: 820px;
+}
+
+.lecture { display: none; }
+.lecture.active { display: block; animation: fadeIn 0.2s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── LECTURE HEADER ── */
+.lec-week {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cs50-red);
+  margin-bottom: 6px;
+}
+.lec-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--black);
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+.lec-title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--gray-700);
+}
+.lec-topics {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.lec-desc {
+  font-size: 15px;
+  color: var(--gray-700);
+  line-height: 1.75;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 2px solid var(--cs50-red);
+}
+
+/* ── SECTION ── */
+.section { margin-bottom: 32px; }
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.section-sub {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-700);
+  margin: 16px 0 8px;
+}
+
+/* ── ANALOGY ── */
+.analogy {
+  background: var(--cs50-red-lite);
+  border-left: 4px solid var(--cs50-red);
+  padding: 16px 20px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 4px;
+}
+.analogy-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cs50-red);
+  margin-bottom: 6px;
+}
+.analogy p { font-size: 14px; color: var(--gray-900); line-height: 1.7; }
+
+/* ── CONCEPT CARDS ── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+.concept-card {
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.concept-card:hover { border-color: var(--cs50-red); box-shadow: 0 2px 8px rgba(192,57,43,0.08); }
+.cc-icon { font-size: 20px; margin-bottom: 7px; }
+.cc-name { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+.cc-desc { font-size: 12.5px; color: var(--gray-600, #6c757d); line-height: 1.55; }
+
+/* ── CODE BLOCKS ── */
+.code-wrap { margin-bottom: 6px; }
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #2d2d2d;
+  border-radius: 6px 6px 0 0;
+  padding: 8px 14px;
+  border-bottom: 1px solid #444;
+}
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-filename {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #aaa;
+  margin-left: 4px;
+}
+.code-label-text {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 6px;
+  font-style: italic;
+}
+pre.code-block {
+  background: #1e1e1e;
+  border-radius: 0 0 6px 6px;
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+  color: #d4d4d4;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0;
+}
+/* Syntax tokens */
+.t-kw  { color: #569cd6; }
+.t-fn  { color: #dcdcaa; }
+.t-str { color: #ce9178; }
+.t-cmt { color: #6a9955; font-style: italic; }
+.t-num { color: #b5cea8; }
+.t-bi  { color: #4ec9b0; }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin-bottom: 4px;
+}
+thead { background: var(--gray-900); }
+th {
+  text-align: left;
+  padding: 10px 14px;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--gray-100); }
+td code, th code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: rgba(0,0,0,0.07);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--cs50-red-dark);
+}
+.table-wrap { border: 1px solid var(--gray-300); border-radius: 6px; overflow: hidden; }
+
+/* ── TIPS ── */
+.tip {
+  display: flex;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  border: 1px solid;
+}
+.tip.warn  { background: #fef9e7; border-color: #f9ca24; }
+.tip.good  { background: #eafaf1; border-color: #27ae60; }
+.tip.info  { background: #eaf4fb; border-color: #3498db; }
+.tip.red   { background: var(--cs50-red-lite); border-color: var(--cs50-red); }
+.tip-icon  { font-size: 17px; flex-shrink: 0; }
+.tip-body  { color: var(--gray-700); }
+.tip-body strong { color: var(--black); font-weight: 700; }
+.tip-body code { font-family: var(--mono); font-size: 12px; background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; }
+
+/* ── FLOWCHART ── */
+.flow-container { overflow-x: auto; padding: 4px 0 8px; }
+svg.flow { display: block; }
+
+/* ── INTERACTIVE DEMO ── */
+.demo-box {
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.demo-topbar {
+  background: var(--gray-900);
+  color: var(--white);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.demo-body { padding: 16px; background: var(--white); }
+.demo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.demo-lbl { font-size: 13px; color: var(--gray-700); font-weight: 500; }
+input[type="number"] {
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  width: 80px;
+  color: var(--gray-900);
+  outline: none;
+}
+input[type="number"]:focus { border-color: var(--cs50-red); box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
+.demo-output {
+  background: #1e1e1e;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #4ec9b0;
+  min-height: 48px;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+.btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.btn {
+  
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--gray-300);
+  background: var(--white);
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all 0.12s;
+  letter-spacing: 0.02em;
+}
+.btn:hover { border-color: var(--cs50-red); color: var(--cs50-red); background: var(--cs50-red-lite); }
+.btn.primary { background: var(--cs50-red); color: var(--white); border-color: var(--cs50-red); }
+.btn.primary:hover { background: var(--cs50-red-dark); border-color: var(--cs50-red-dark); }
+
+/* ── BREADCRUMB HEADER ── */
+.bc { font-size: 12px; color: var(--gray-500); margin-bottom: 20px; }
+.bc a { color: var(--cs50-red); text-decoration: none; }
+.bc a:hover { text-decoration: underline; }
+.bc-sep { margin: 0 6px; }
+
+/* ── PROGRESS ── */
+.progress-strip {
+  position: fixed;
+  top: var(--topbar-h);
+  left: var(--sidebar-w);
+  right: 0;
+  height: 3px;
+  background: var(--gray-200);
+  z-index: 100;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--cs50-red);
+  transition: width 0.35s ease;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 28px 20px 60px; }
+  .progress-strip { left: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-logo">CS50<span>'s</span></div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-course">Introduction to Programming with Python</div>
+  <div class="topbar-right">Study Notes</div>
+</header>
+
+<!-- PROGRESS -->
+<div class="progress-strip"><div class="progress-fill" id="prog" style="width:11%"></div></div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Weeks</div>
+      <div id="nav-list"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div id="content"></div>
+  </main>
+</div>
+
+<script>
+/* ── DATA ──────────────────────────────────────────── */
+const lectures = [
+  {
+    num: 0,
+    title: "Functions, Variables",
+    topics: "Functions · Arguments · Side Effects · Return Values · Variables · Scope · str · int · float · def · return",
+    desc: "Python programs are built from functions — actions that do things — and variables that store data. This week introduces the core building blocks every Python program uses.",
+    sections: [
+      { type:"analogy", text:"Think of a function like a vending machine. You press a button (call the function), put in money (arguments), and a snack comes out (return value). The snack appearing is the <em>side effect</em> — something visible happening. The snack itself is the <em>return value</em> — a value handed back to you." },
+      { type:"concepts", title:"Key Vocabulary", items:[
+        { icon:"🔧", name:"Function", desc:"A named action or command. Calling it makes Python do something." },
+        { icon:"📦", name:"Variable", desc:"A labelled container that stores a value you can reuse later." },
+        { icon:"📥", name:"Argument", desc:"A value you pass into a function so it knows what to work on." },
+        { icon:"📤", name:"Return value", desc:"The result a function hands back after completing its job." },
+        { icon:"💬", name:"Side effect", desc:"Something a function does visibly, like printing to the screen." },
+        { icon:"🔭", name:"Scope", desc:"Where a variable exists. Variables only live in the function that created them." },
+      ]},
+      { type:"flow", title:"How Python runs your code", steps:[
+        {l:"You write\nHello.py",    fill:"#c0392b", tc:"#fff"},
+        {l:"Run: python\nHello.py",  fill:"#2c3e50", tc:"#fff"},
+        {l:"Interpreter\nreads file",fill:"#c0392b", tc:"#fff"},
+        {l:"Translates\nto 0s & 1s", fill:"#2c3e50", tc:"#fff"},
+        {l:"Output on\nscreen",      fill:"#27ae60", tc:"#fff"},
+      ]},
+      { type:"table", title:"Built-in functions to know", headers:["Function","What it does","Example"],
+        rows:[
+          ["<code>print()</code>","Displays text on screen","<code>print(\"Hello!\")</code>"],
+          ["<code>input()</code>","Asks user to type something","<code>input(\"Name? \")</code>"],
+          ["<code>int()</code>","Converts text to whole number","<code>int(\"5\")</code> → 5"],
+          ["<code>float()</code>","Converts text to decimal","<code>float(\"3.14\")</code> → 3.14"],
+          ["<code>str()</code>","Converts number to text","<code>str(42)</code> → \"42\""],
+        ]
+      },
+      { type:"code", file:"greeting.py", label:"Getting user input and greeting them",
+        code:`<span class="t-cmt"># Ask the user for their name and greet them</span>
+name = <span class="t-fn">input</span>(<span class="t-str">"What is your name? "</span>)
+<span class="t-fn">print</span>(<span class="t-str">"Nice to meet you,"</span>, name)
+
+<span class="t-cmt"># Cleaner version using an f-string</span>
+<span class="t-fn">print</span>(<span class="t-str">f"Nice to meet you, {name}!"</span>)`
+      },
+      { type:"code", file:"functions.py", label:"Writing your own function with a return value",
+        code:`<span class="t-kw">def</span> <span class="t-fn">double</span>(n):
+    <span class="t-kw">return</span> n * <span class="t-num">2</span>
+
+<span class="t-kw">def</span> <span class="t-fn">square</span>(n):
+    <span class="t-kw">return</span> n * n
+
+result = <span class="t-fn">double</span>(<span class="t-num">7</span>)
+<span class="t-fn">print</span>(<span class="t-str">"Double of 7 is"</span>, result)   <span class="t-cmt"># 14</span>
+<span class="t-fn">print</span>(<span class="t-str">"5 squared is"</span>, <span class="t-fn">square</span>(<span class="t-num">5</span>))   <span class="t-cmt"># 25</span>`
+      },
+      { type:"tips", items:[
+        { k:"warn",  icon:"⚠️", html:"<strong>= vs ==</strong> — A single <code>=</code> assigns a value. Double <code>==</code> checks equality. Never mix them up!" },
+        { k:"warn",  icon:"⚠️", html:"<strong>Scope error</strong> — A variable created inside a function cannot be used outside of it. Pass values as arguments instead." },
+        { k:"info",  icon:"💡", html:"<strong>f-strings</strong> are the cleanest way to embed variables in text: <code>f\"Hello, {name}!\"</code>" },
+      ]},
+    ]
+  },
+  {
+    num: 1,
+    title: "Conditionals",
+    topics: "if · elif · else · Boolean Expressions · and · or · not · match",
+    desc: "Conditionals let your program make decisions. Using <code>if</code>, <code>elif</code>, and <code>else</code>, you can run different code depending on what values the user provides or what conditions are true.",
+    sections: [
+      { type:"analogy", text:"Conditionals are like forks in a road. If it is raining, take the covered path. Otherwise, walk outside. Python's <em>if / elif / else</em> gives your program the same ability to choose different paths depending on any condition you define." },
+      { type:"table", title:"Comparison operators", headers:["Symbol","Meaning","Example","Result"],
+        rows:[
+          ["<code>==</code>","Is equal to","<code>5 == 5</code>","True"],
+          ["<code>!=</code>","Is not equal to","<code>3 != 4</code>","True"],
+          ["<code>&gt;</code>","Greater than","<code>10 &gt; 3</code>","True"],
+          ["<code>&lt;</code>","Less than","<code>2 &lt; 7</code>","True"],
+          ["<code>&gt;=</code>","Greater than or equal","<code>5 &gt;= 5</code>","True"],
+          ["<code>&lt;=</code>","Less than or equal","<code>4 &lt;= 6</code>","True"],
+        ]
+      },
+      { type:"flow", title:"if / elif / else decision flow", steps:[
+        {l:"Start",            fill:"#2c3e50", tc:"#fff"},
+        {l:"if\ncondition?",   fill:"#c0392b", tc:"#fff"},
+        {l:"Run if\nblock ✓",  fill:"#27ae60", tc:"#fff"},
+        {l:"elif\ncondition?", fill:"#c0392b", tc:"#fff"},
+        {l:"Run elif\nblock ✓",fill:"#27ae60", tc:"#fff"},
+        {l:"else:\nfallback",  fill:"#7f8c8d", tc:"#fff"},
+      ]},
+      { type:"code", file:"temperature.py", label:"Temperature checker — if / elif / else in action",
+        code:`temp = <span class="t-bi">int</span>(<span class="t-fn">input</span>(<span class="t-str">"Temperature in °C? "</span>))
+
+<span class="t-kw">if</span> temp &gt; <span class="t-num">30</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"It's hot! Stay hydrated."</span>)
+<span class="t-kw">elif</span> temp &gt; <span class="t-num">15</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"Nice weather for a walk."</span>)
+<span class="t-kw">elif</span> temp &gt; <span class="t-num">0</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"A bit chilly — bring a jacket."</span>)
+<span class="t-kw">else</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"It's freezing! Stay inside."</span>)`
+      },
+      { type:"interactive", id:"cond_demo" },
+      { type:"table", title:"Logical operators", headers:["Keyword","Meaning","Example"],
+        rows:[
+          ["<code>and</code>","Both must be true","<code>age &gt; 0 and age &lt; 120</code>"],
+          ["<code>or</code>","At least one true","<code>color == \"red\" or color == \"blue\"</code>"],
+          ["<code>not</code>","Flips true/false","<code>not is_raining</code>"],
+        ]
+      },
+      { type:"code", file:"day.py", label:"match statement — cleaner multiple-choice logic",
+        code:`day = <span class="t-fn">input</span>(<span class="t-str">"Enter a day: "</span>)
+
+<span class="t-kw">match</span> day:
+    <span class="t-kw">case</span> <span class="t-str">"Monday"</span> | <span class="t-str">"Tuesday"</span> | <span class="t-str">"Wednesday"</span> | <span class="t-str">"Thursday"</span> | <span class="t-str">"Friday"</span>:
+        <span class="t-fn">print</span>(<span class="t-str">"It's a weekday."</span>)
+    <span class="t-kw">case</span> <span class="t-str">"Saturday"</span> | <span class="t-str">"Sunday"</span>:
+        <span class="t-fn">print</span>(<span class="t-str">"It's the weekend!"</span>)
+    <span class="t-kw">case</span> _:
+        <span class="t-fn">print</span>(<span class="t-str">"Unknown day."</span>)`
+      },
+    ]
+  },
+  {
+    num: 2,
+    title: "Loops",
+    topics: "while · for · range · break · continue · Nested loops",
+    desc: "Loops let you repeat actions without copy-pasting code. Python's <code>while</code> loop repeats as long as a condition is true; the <code>for</code> loop repeats for each item in a sequence.",
+    sections: [
+      { type:"analogy", text:"A loop is like a washing machine cycle. You don't manually spin the drum — you set it once and it runs until done. Python loops let you repeat code as many times as needed without writing the same lines over and over." },
+      { type:"concepts", title:"Two types of loops", items:[
+        { icon:"🔄", name:"while loop", desc:"Keeps repeating as long as a condition is true. You control when it stops." },
+        { icon:"🔢", name:"for loop",   desc:"Repeats a fixed number of times, or once for each item in a list." },
+      ]},
+      { type:"flow", title:"How a while loop works", steps:[
+        {l:"counter = 1",      fill:"#2c3e50", tc:"#fff"},
+        {l:"counter\n<= 5?",   fill:"#c0392b", tc:"#fff"},
+        {l:"Print\ncounter",   fill:"#27ae60", tc:"#fff"},
+        {l:"counter\n+= 1",    fill:"#2980b9", tc:"#fff"},
+        {l:"Back to\ncheck",   fill:"#7f8c8d", tc:"#fff"},
+        {l:"Exit loop",        fill:"#27ae60", tc:"#fff"},
+      ]},
+      { type:"code", file:"loops.py", label:"while and for loops compared",
+        code:`<span class="t-cmt"># While loop — run until condition is false</span>
+count = <span class="t-num">5</span>
+<span class="t-kw">while</span> count &gt; <span class="t-num">0</span>:
+    <span class="t-fn">print</span>(<span class="t-str">f"T-minus {count}..."</span>)
+    count -= <span class="t-num">1</span>
+<span class="t-fn">print</span>(<span class="t-str">"Liftoff!"</span>)
+
+<span class="t-cmt"># For loop — repeat exactly 3 times</span>
+<span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-bi">range</span>(<span class="t-num">3</span>):
+    <span class="t-fn">print</span>(<span class="t-str">"Hello!"</span>)
+
+<span class="t-cmt"># For loop — iterate over a list</span>
+fruits = [<span class="t-str">"apple"</span>, <span class="t-str">"banana"</span>, <span class="t-str">"cherry"</span>]
+<span class="t-kw">for</span> fruit <span class="t-kw">in</span> fruits:
+    <span class="t-fn">print</span>(<span class="t-str">f"I like {fruit}"</span>)`
+      },
+      { type:"interactive", id:"loop_demo" },
+      { type:"table", title:"Useful loop tools", headers:["Keyword / Function","What it does","Example"],
+        rows:[
+          ["<code>break</code>","Exit the loop immediately","Stop when an item is found"],
+          ["<code>continue</code>","Skip to next iteration","Skip negative numbers"],
+          ["<code>range(n)</code>","Numbers 0 to n-1","<code>range(5)</code> → 0,1,2,3,4"],
+          ["<code>range(a, b)</code>","Numbers a to b-1","<code>range(2, 5)</code> → 2,3,4"],
+          ["<code>range(a, b, step)</code>","With custom step","<code>range(0, 10, 2)</code> → 0,2,4,6,8"],
+        ]
+      },
+      { type:"tips", items:[
+        { k:"warn", icon:"🚨", html:"<strong>Infinite loop!</strong> If a while loop's condition never becomes False it runs forever. Always ensure something changes each iteration. Press <code>Ctrl+C</code> to stop." },
+        { k:"info", icon:"💡", html:"Use <code>_</code> instead of <code>i</code> as the loop variable when you do not actually need the number — it signals to readers the value is unused." },
+      ]},
+    ]
+  },
+  {
+    num: 4,
+    title: "Libraries",
+    topics: "import · from · random · sys · pip · Modules · Packages",
+    desc: "Libraries (also called modules) are files of code written by others that you can load into your own programs. Python ships with dozens of built-in modules, and thousands more can be installed with <code>pip</code>.",
+    sections: [
+      { type:"analogy", text:"A library is like an app store for code. Instead of building a random-number generator from scratch, you import Python's <em>random</em> module and it's done for you in one line. You get to focus on your actual problem." },
+      { type:"flow", title:"How importing works", steps:[
+        {l:"Write:\nimport random", fill:"#c0392b", tc:"#fff"},
+        {l:"Python finds\nrandom.py",    fill:"#2c3e50", tc:"#fff"},
+        {l:"Loads into\nmemory",         fill:"#2c3e50", tc:"#fff"},
+        {l:"Call:\nrandom.choice()", fill:"#c0392b", tc:"#fff"},
+        {l:"Returns\nrandom value",   fill:"#27ae60", tc:"#fff"},
+      ]},
+      { type:"table", title:"import vs from … import", headers:["Style","Code","How you call it"],
+        rows:[
+          ["Import module","<code>import random</code>","<code>random.choice([...])</code>"],
+          ["From … import","<code>from random import choice</code>","<code>choice([...])</code>"],
+        ]
+      },
+      { type:"code", file:"generate.py", label:"Three useful random functions",
+        code:`<span class="t-kw">import</span> random
+
+<span class="t-cmt"># Pick one item randomly from a list</span>
+coin = random.<span class="t-fn">choice</span>([<span class="t-str">"heads"</span>, <span class="t-str">"tails"</span>])
+<span class="t-fn">print</span>(coin)
+
+<span class="t-cmt"># Random integer between 1 and 6 (like a die)</span>
+die = random.<span class="t-fn">randint</span>(<span class="t-num">1</span>, <span class="t-num">6</span>)
+<span class="t-fn">print</span>(<span class="t-str">"You rolled:"</span>, die)
+
+<span class="t-cmt"># Shuffle a list in place</span>
+playlist = [<span class="t-str">"Song A"</span>, <span class="t-str">"Song B"</span>, <span class="t-str">"Song C"</span>]
+random.<span class="t-fn">shuffle</span>(playlist)
+<span class="t-fn">print</span>(playlist)`
+      },
+      { type:"table", title:"Other useful built-in libraries", headers:["Library","For","Example function"],
+        rows:[
+          ["<code>random</code>","Randomness, shuffling","<code>random.choice(), randint()</code>"],
+          ["<code>sys</code>","System info, command-line args","<code>sys.argv, sys.exit()</code>"],
+          ["<code>statistics</code>","Math stats on lists","<code>statistics.mean([1,2,3])</code>"],
+          ["<code>csv</code>","Reading/writing CSV files","<code>csv.DictReader(file)</code>"],
+        ]
+      },
+      { type:"code", file:"greet.py", label:"sys.argv — passing arguments when running a script",
+        code:`<span class="t-kw">import</span> sys
+
+<span class="t-cmt"># Run as: python greet.py Alice</span>
+<span class="t-cmt"># sys.argv = ["greet.py", "Alice"]</span>
+
+<span class="t-kw">if</span> <span class="t-bi">len</span>(sys.argv) == <span class="t-num">2</span>:
+    name = sys.argv[<span class="t-num">1</span>]
+    <span class="t-fn">print</span>(<span class="t-str">f"Hello, {name}!"</span>)
+<span class="t-kw">else</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"Usage: python greet.py &lt;name&gt;"</span>)`
+      },
+      { type:"tips", items:[
+        { k:"good", icon:"💡", html:"<strong>pip</strong> installs third-party packages: <code>pip install cowsay</code>. Find packages at <strong>pypi.org</strong>." },
+        { k:"info", icon:"📖", html:"Full documentation for every built-in module lives at <strong>docs.python.org</strong>." },
+      ]},
+    ]
+  },
+  {
+    num: 5,
+    title: "Unit Tests",
+    topics: "assert · pytest · test_ functions · AssertionError · Exceptions in tests",
+    desc: "Instead of testing your code manually every time, you write small test programs that check your code automatically. This practice — called unit testing — catches bugs early and gives you confidence to change code later.",
+    sections: [
+      { type:"analogy", text:"Unit testing is like a factory quality-control inspector. Instead of waiting for a customer to find a defect, you test each part automatically before shipping. Your tests run in seconds and tell you exactly what — if anything — broke." },
+      { type:"concepts", title:"Why write tests?", items:[
+        { icon:"🐛", name:"Find bugs early",    desc:"Catch mistakes before they cause real problems" },
+        { icon:"🔄", name:"Test automatically", desc:"Run hundreds of checks instantly, not by hand" },
+        { icon:"🛡️", name:"Stay confident",     desc:"Changing code is safe when tests catch regressions" },
+        { icon:"📋", name:"Document behaviour", desc:"Tests show exactly what your functions should do" },
+      ]},
+      { type:"code", file:"calculator.py", label:"assert — boldly claim something must be true",
+        code:`<span class="t-kw">def</span> <span class="t-fn">square</span>(n):
+    <span class="t-kw">return</span> n * n
+
+<span class="t-cmt"># assert checks a condition is True</span>
+<span class="t-cmt"># If False → AssertionError is raised</span>
+<span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">2</span>)  == <span class="t-num">4</span>
+<span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">3</span>)  == <span class="t-num">9</span>
+<span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">-2</span>) == <span class="t-num">4</span>
+<span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">0</span>)  == <span class="t-num">0</span>
+<span class="t-fn">print</span>(<span class="t-str">"All tests passed!"</span>)`
+      },
+      { type:"flow", title:"Test-driven development cycle", steps:[
+        {l:"Write\nfunction",  fill:"#2c3e50", tc:"#fff"},
+        {l:"Write\ntest file", fill:"#2980b9", tc:"#fff"},
+        {l:"Run\npytest",      fill:"#c0392b", tc:"#fff"},
+        {l:"Tests\npass?",     fill:"#c0392b", tc:"#fff"},
+        {l:"Fix\nthe bug",     fill:"#e67e22", tc:"#fff"},
+        {l:"Ship! 🚀",         fill:"#27ae60", tc:"#fff"},
+      ]},
+      { type:"code", file:"test_calculator.py", label:"Writing tests with pytest — the professional approach",
+        code:`<span class="t-kw">from</span> calculator <span class="t-kw">import</span> square
+
+<span class="t-kw">def</span> <span class="t-fn">test_positive</span>():
+    <span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">2</span>)  == <span class="t-num">4</span>
+    <span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">3</span>)  == <span class="t-num">9</span>
+    <span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">10</span>) == <span class="t-num">100</span>
+
+<span class="t-kw">def</span> <span class="t-fn">test_negative</span>():
+    <span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">-2</span>) == <span class="t-num">4</span>
+    <span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">-3</span>) == <span class="t-num">9</span>
+
+<span class="t-kw">def</span> <span class="t-fn">test_zero</span>():
+    <span class="t-kw">assert</span> <span class="t-fn">square</span>(<span class="t-num">0</span>)  == <span class="t-num">0</span>
+
+<span class="t-cmt"># Run all tests: pytest test_calculator.py</span>`
+      },
+      { type:"table", title:"What to test — choose representative cases", headers:["Case type","Why test it","Example for square()"],
+        rows:[
+          ["Positive numbers","The typical use case","<code>square(3) == 9</code>"],
+          ["Negative numbers","May behave differently","<code>square(-3) == 9</code>"],
+          ["Zero","Edge case, often unexpected","<code>square(0) == 0</code>"],
+          ["Large numbers","Check for overflow","<code>square(100) == 10000</code>"],
+        ]
+      },
+    ]
+  },
+  {
+    num: 6,
+    title: "File I/O",
+    topics: "open · read · write · append · with · CSV · DictReader · DictWriter",
+    desc: "Variables live only as long as your program runs. Files let you save data to disk so it persists between runs. File I/O — Input and Output — is how you read from and write to files in Python.",
+    sections: [
+      { type:"analogy", text:"Without files, your program is like a whiteboard that gets erased when you leave the room. Files are like a notebook — you write things down and they are still there the next day." },
+      { type:"table", title:"File open modes", headers:["Mode","Meaning","Creates file?","Overwrites?"],
+        rows:[
+          ["<code>\"r\"</code>","Read — open to read","No","No"],
+          ["<code>\"w\"</code>","Write — open to write","Yes","Yes ⚠️"],
+          ["<code>\"a\"</code>","Append — add to end","Yes","No"],
+        ]
+      },
+      { type:"code", file:"names.py", label:"Writing to a file — saving user data",
+        code:`name = <span class="t-fn">input</span>(<span class="t-str">"Your name? "</span>)
+
+<span class="t-cmt"># 'a' = append — adds to existing content</span>
+<span class="t-kw">with</span> <span class="t-bi">open</span>(<span class="t-str">"names.txt"</span>, <span class="t-str">"a"</span>) <span class="t-kw">as</span> file:
+    file.<span class="t-fn">write</span>(<span class="t-str">f"{name}\n"</span>)  <span class="t-cmt"># \n = new line</span>
+
+<span class="t-fn">print</span>(<span class="t-str">"Name saved!"</span>)`
+      },
+      { type:"tips", items:[
+        { k:"good", icon:"💡", html:"<strong>with open()</strong> closes the file automatically when the block finishes — like a self-closing door. Much safer than calling <code>file.close()</code> manually." },
+        { k:"warn", icon:"⚠️", html:"Mode <code>\"w\"</code> (write) <strong>overwrites</strong> the entire file every time. Use <code>\"a\"</code> (append) to keep existing content." },
+      ]},
+      { type:"code", file:"read_names.py", label:"Reading from a file — loading saved data",
+        code:`names = []
+
+<span class="t-kw">with</span> <span class="t-bi">open</span>(<span class="t-str">"names.txt"</span>, <span class="t-str">"r"</span>) <span class="t-kw">as</span> file:
+    <span class="t-kw">for</span> line <span class="t-kw">in</span> file:
+        name = line.<span class="t-fn">strip</span>()  <span class="t-cmt"># remove trailing \n</span>
+        names.<span class="t-fn">append</span>(name)
+
+<span class="t-kw">for</span> name <span class="t-kw">in</span> <span class="t-bi">sorted</span>(names):
+    <span class="t-fn">print</span>(<span class="t-str">f"Hello, {name}!"</span>)`
+      },
+      { type:"flow", title:"File read/write flow", steps:[
+        {l:"open(file,\n'w' or 'a')", fill:"#c0392b", tc:"#fff"},
+        {l:"file.write\n(data)",       fill:"#c0392b", tc:"#fff"},
+        {l:"Data saved\nto disk 💾",   fill:"#27ae60", tc:"#fff"},
+        {l:"open(file,\n'r')",         fill:"#2980b9", tc:"#fff"},
+        {l:"Read each\nline",          fill:"#2980b9", tc:"#fff"},
+        {l:"Use the\ndata ✓",          fill:"#27ae60", tc:"#fff"},
+      ]},
+      { type:"code", file:"students.py", label:"CSV files — structured spreadsheet-like data",
+        code:`<span class="t-kw">import</span> csv
+
+<span class="t-cmt"># Writing a CSV file</span>
+<span class="t-kw">with</span> <span class="t-bi">open</span>(<span class="t-str">"students.csv"</span>, <span class="t-str">"w"</span>, newline=<span class="t-str">""</span>) <span class="t-kw">as</span> f:
+    writer = csv.<span class="t-fn">DictWriter</span>(f, fieldnames=[<span class="t-str">"name"</span>, <span class="t-str">"grade"</span>])
+    writer.<span class="t-fn">writeheader</span>()
+    writer.<span class="t-fn">writerow</span>({<span class="t-str">"name"</span>: <span class="t-str">"Alice"</span>, <span class="t-str">"grade"</span>: <span class="t-str">"A"</span>})
+
+<span class="t-cmt"># Reading a CSV file</span>
+<span class="t-kw">with</span> <span class="t-bi">open</span>(<span class="t-str">"students.csv"</span>) <span class="t-kw">as</span> f:
+    reader = csv.<span class="t-fn">DictReader</span>(f)
+    <span class="t-kw">for</span> row <span class="t-kw">in</span> reader:
+        <span class="t-fn">print</span>(row[<span class="t-str">"name"</span>], <span class="t-str">"got"</span>, row[<span class="t-str">"grade"</span>])`
+      },
+    ]
+  },
+  {
+    num: 7,
+    title: "Regular Expressions",
+    topics: "re · search · match · fullmatch · sub · Patterns · Groups · \\w · \\d",
+    desc: "A regular expression (regex) is a pattern used to search, validate, or transform text. Python's <code>re</code> library lets you write these patterns to match things like email addresses, phone numbers, or any structured text.",
+    sections: [
+      { type:"analogy", text:"A regex is like a search template. Imagine finding every phone number in a long document. Instead of reading it yourself, you write a pattern — \"three digits, dash, four digits\" — and let the computer find every match automatically." },
+      { type:"table", title:"Key regex symbols", headers:["Symbol","Meaning","Example pattern","Matches"],
+        rows:[
+          ["<code>.</code>","Any single character","<code>a.c</code>","\"abc\", \"axc\""],
+          ["<code>*</code>","Zero or more of previous","<code>ab*c</code>","\"ac\", \"abc\", \"abbc\""],
+          ["<code>+</code>","One or more of previous","<code>ab+c</code>","\"abc\", \"abbc\" (not \"ac\")"],
+          ["<code>?</code>","Zero or one of previous","<code>colou?r</code>","\"color\" or \"colour\""],
+          ["<code>^</code>","Start of string","<code>^Hello</code>","Must start with Hello"],
+          ["<code>$</code>","End of string","<code>world$</code>","Must end with world"],
+          ["<code>\\w</code>","Any letter or digit","<code>\\w+</code>","\"hello\", \"abc123\""],
+          ["<code>\\d</code>","Any digit 0–9","<code>\\d{4}</code>","\"2024\""],
+        ]
+      },
+      { type:"code", file:"validate.py", label:"Validating an email address with re.search",
+        code:`<span class="t-kw">import</span> re
+
+email = <span class="t-fn">input</span>(<span class="t-str">"Your email? "</span>).<span class="t-fn">strip</span>()
+
+<span class="t-cmt"># Pattern: letters/dots before @, domain, .extension</span>
+<span class="t-kw">if</span> re.<span class="t-fn">search</span>(<span class="t-str">r"^[\w.-]+@[\w.-]+\.[a-z]{2,}$"</span>, email):
+    <span class="t-fn">print</span>(<span class="t-str">"Valid email!"</span>)
+<span class="t-kw">else</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"Invalid — please try again."</span>)`
+      },
+      { type:"table", title:"re library functions", headers:["Function","What it does"],
+        rows:[
+          ["<code>re.search(p, text)</code>","Finds pattern anywhere in text — returns match object or None"],
+          ["<code>re.match(p, text)</code>","Checks only if text starts with pattern"],
+          ["<code>re.fullmatch(p, text)</code>","Checks if the entire text matches pattern"],
+          ["<code>re.sub(p, repl, text)</code>","Replaces all pattern matches with replacement text"],
+        ]
+      },
+      { type:"code", file:"reformat.py", label:"Extracting and reformatting text with groups",
+        code:`<span class="t-kw">import</span> re
+
+<span class="t-cmt"># User types: "Malan, David"</span>
+<span class="t-cmt"># We want:   "David Malan"</span>
+
+name = <span class="t-fn">input</span>(<span class="t-str">"Name (Last, First)? "</span>).<span class="t-fn">strip</span>()
+m = re.<span class="t-fn">search</span>(<span class="t-str">r"^(\w+), (\w+)$"</span>, name)
+
+<span class="t-kw">if</span> m:
+    <span class="t-fn">print</span>(<span class="t-str">f"Hello, {m.group(2)} {m.group(1)}!"</span>)
+<span class="t-kw">else</span>:
+    <span class="t-fn">print</span>(<span class="t-str">"Please use 'Last, First' format."</span>)`
+      },
+    ]
+  },
+  {
+    num: 8,
+    title: "Object-Oriented Programming",
+    topics: "class · __init__ · self · Attributes · Methods · __str__ · __lt__ · Instances",
+    desc: "Object-oriented programming (OOP) lets you model real-world things as objects in code. A <em>class</em> is a blueprint; an <em>object</em> is a specific instance of that blueprint with its own data.",
+    sections: [
+      { type:"analogy", text:"OOP is like designing a blueprint for a house. The blueprint (class) defines what every house has: rooms, windows, a front door. Each actual house you build from that blueprint is an object. Every house shares the same structure but has its own address, colour, and number of rooms." },
+      { type:"concepts", title:"Key OOP vocabulary", items:[
+        { icon:"📋", name:"Class",             desc:"A blueprint or template. Defines what objects of this type have and can do." },
+        { icon:"🏠", name:"Object / Instance", desc:"A specific thing made from a class — one particular house from the blueprint." },
+        { icon:"🔩", name:"Attribute",         desc:"A variable belonging to an object — e.g. a student's name or grade." },
+        { icon:"⚡", name:"Method",            desc:"A function belonging to a class — e.g. greet() or is_passing()." },
+        { icon:"🔑", name:"__init__",          desc:"Runs automatically when you create a new object. Sets up its attributes." },
+        { icon:"👆", name:"self",              desc:"Refers to the current object inside its own methods." },
+      ]},
+      { type:"code", file:"student.py", label:"Creating and using a class",
+        code:`<span class="t-kw">class</span> <span class="t-bi">Student</span>:
+    <span class="t-kw">def</span> <span class="t-fn">__init__</span>(<span class="t-kw">self</span>, name, grade):
+        <span class="t-kw">self</span>.name  = name    <span class="t-cmt"># attribute</span>
+        <span class="t-kw">self</span>.grade = grade   <span class="t-cmt"># attribute</span>
+
+    <span class="t-kw">def</span> <span class="t-fn">greet</span>(<span class="t-kw">self</span>):       <span class="t-cmt"># method</span>
+        <span class="t-fn">print</span>(<span class="t-str">f"Hi, I'm {self.name} in grade {self.grade}!"</span>)
+
+    <span class="t-kw">def</span> <span class="t-fn">is_passing</span>(<span class="t-kw">self</span>):
+        <span class="t-kw">return</span> <span class="t-kw">self</span>.grade &gt;= <span class="t-num">5</span>
+
+alice = <span class="t-bi">Student</span>(<span class="t-str">"Alice"</span>, <span class="t-num">8</span>)
+bob   = <span class="t-bi">Student</span>(<span class="t-str">"Bob"</span>,   <span class="t-num">4</span>)
+
+alice.<span class="t-fn">greet</span>()              <span class="t-cmt"># Hi, I'm Alice in grade 8!</span>
+<span class="t-fn">print</span>(bob.<span class="t-fn">is_passing</span>())   <span class="t-cmt"># False</span>`
+      },
+      { type:"flow", title:"Class and object relationship", steps:[
+        {l:"class\nStudent:",    fill:"#c0392b", tc:"#fff"},
+        {l:"__init__\nattributes", fill:"#2c3e50", tc:"#fff"},
+        {l:"Methods\ngreet() …",  fill:"#2980b9", tc:"#fff"},
+        {l:"alice =\nStudent(…)", fill:"#27ae60", tc:"#fff"},
+        {l:"alice\n.greet()",    fill:"#27ae60", tc:"#fff"},
+      ]},
+      { type:"table", title:"Special __dunder__ methods", headers:["Method","Runs when…","Use it to"],
+        rows:[
+          ["<code>__init__</code>","Object is created","Set up initial attribute values"],
+          ["<code>__str__</code>","You call print() on object","Return a readable description"],
+          ["<code>__lt__</code>","You compare with &lt;","Sort objects by a value"],
+        ]
+      },
+      { type:"code", file:"book.py", label:"__str__ — making print() show something useful",
+        code:`<span class="t-kw">class</span> <span class="t-bi">Book</span>:
+    <span class="t-kw">def</span> <span class="t-fn">__init__</span>(<span class="t-kw">self</span>, title, author, pages):
+        <span class="t-kw">self</span>.title  = title
+        <span class="t-kw">self</span>.author = author
+        <span class="t-kw">self</span>.pages  = pages
+
+    <span class="t-kw">def</span> <span class="t-fn">__str__</span>(<span class="t-kw">self</span>):
+        <span class="t-kw">return</span> <span class="t-str">f'"{self.title}" by {self.author} ({self.pages} pages)'</span>
+
+    <span class="t-kw">def</span> <span class="t-fn">is_long</span>(<span class="t-kw">self</span>):
+        <span class="t-kw">return</span> <span class="t-kw">self</span>.pages &gt; <span class="t-num">300</span>
+
+book = <span class="t-bi">Book</span>(<span class="t-str">"The Hobbit"</span>, <span class="t-str">"Tolkien"</span>, <span class="t-num">310</span>)
+<span class="t-fn">print</span>(book)            <span class="t-cmt"># "The Hobbit" by Tolkien (310 pages)</span>
+<span class="t-fn">print</span>(book.<span class="t-fn">is_long</span>())  <span class="t-cmt"># True</span>`
+      },
+    ]
+  },
+  {
+    num: 9,
+    title: "Et Cetera",
+    topics: "set · global · List comprehensions · map · filter · lambda · Custom exceptions",
+    desc: "Python has many more features beyond what the earlier weeks covered. This final week introduces several useful extras: sets, global variables, list comprehensions, lambdas, and more.",
+    sections: [
+      { type:"code", file:"unique.py", label:"set — automatic duplicate removal",
+        code:`<span class="t-cmt"># A list keeps every item, including duplicates</span>
+colors = [<span class="t-str">"red"</span>, <span class="t-str">"blue"</span>, <span class="t-str">"red"</span>, <span class="t-str">"green"</span>, <span class="t-str">"blue"</span>]
+<span class="t-fn">print</span>(colors)       <span class="t-cmt"># ['red', 'blue', 'red', 'green', 'blue']</span>
+
+<span class="t-cmt"># A set removes duplicates automatically</span>
+unique = <span class="t-bi">set</span>(colors)
+<span class="t-fn">print</span>(unique)       <span class="t-cmt"># {'red', 'blue', 'green'}</span>
+
+<span class="t-cmt"># Build a set directly</span>
+houses = {<span class="t-str">"Gryffindor"</span>, <span class="t-str">"Slytherin"</span>, <span class="t-str">"Gryffindor"</span>, <span class="t-str">"Ravenclaw"</span>}
+<span class="t-fn">print</span>(houses)       <span class="t-cmt"># {'Gryffindor', 'Slytherin', 'Ravenclaw'}</span>`
+      },
+      { type:"code", file:"bank.py", label:"global variables — shared data across functions",
+        code:`balance = <span class="t-num">0</span>   <span class="t-cmt"># global variable (outside all functions)</span>
+
+<span class="t-kw">def</span> <span class="t-fn">deposit</span>(amount):
+    <span class="t-kw">global</span> balance   <span class="t-cmt"># tell Python to modify the global one</span>
+    balance += amount
+
+<span class="t-kw">def</span> <span class="t-fn">show</span>():
+    <span class="t-fn">print</span>(<span class="t-str">f"Balance: £{balance}"</span>)
+
+<span class="t-fn">deposit</span>(<span class="t-num">100</span>)
+<span class="t-fn">deposit</span>(<span class="t-num">50</span>)
+<span class="t-fn">show</span>()      <span class="t-cmt"># Balance: £150</span>`
+      },
+      { type:"code", file:"compact.py", label:"List comprehensions — create lists in one line",
+        code:`<span class="t-cmt"># Old way — loop + append</span>
+squares = []
+<span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-bi">range</span>(<span class="t-num">1</span>, <span class="t-num">6</span>):
+    squares.<span class="t-fn">append</span>(i * i)
+
+<span class="t-cmt"># New way — list comprehension (same result)</span>
+squares = [i * i <span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-bi">range</span>(<span class="t-num">1</span>, <span class="t-num">6</span>)]
+<span class="t-fn">print</span>(squares)   <span class="t-cmt"># [1, 4, 9, 16, 25]</span>
+
+<span class="t-cmt"># With a filter — only even numbers</span>
+evens = [x <span class="t-kw">for</span> x <span class="t-kw">in</span> <span class="t-bi">range</span>(<span class="t-num">10</span>) <span class="t-kw">if</span> x % <span class="t-num">2</span> == <span class="t-num">0</span>]
+<span class="t-fn">print</span>(evens)     <span class="t-cmt"># [0, 2, 4, 6, 8]</span>`
+      },
+      { type:"code", file:"sorting.py", label:"lambda — tiny one-line anonymous functions",
+        code:`<span class="t-cmt"># Normal named function</span>
+<span class="t-kw">def</span> <span class="t-fn">double</span>(x):
+    <span class="t-kw">return</span> x * <span class="t-num">2</span>
+
+<span class="t-cmt"># Lambda equivalent — same thing, one line</span>
+double = <span class="t-kw">lambda</span> x: x * <span class="t-num">2</span>
+<span class="t-fn">print</span>(<span class="t-fn">double</span>(<span class="t-num">5</span>))   <span class="t-cmt"># 10</span>
+
+<span class="t-cmt"># Very useful for sorting complex objects</span>
+students = [
+    {<span class="t-str">"name"</span>: <span class="t-str">"Charlie"</span>, <span class="t-str">"grade"</span>: <span class="t-num">7</span>},
+    {<span class="t-str">"name"</span>: <span class="t-str">"Alice"</span>,   <span class="t-str">"grade"</span>: <span class="t-num">9</span>},
+]
+students.<span class="t-fn">sort</span>(key=<span class="t-kw">lambda</span> s: s[<span class="t-str">"grade"</span>])`
+      },
+      { type:"table", title:"map() and filter()", headers:["Function","What it does","Quick example"],
+        rows:[
+          ["<code>map(fn, list)</code>","Apply function to every item","<code>map(str, [1,2,3])</code> → ['1','2','3']"],
+          ["<code>filter(fn, list)</code>","Keep items where fn returns True","<code>filter(lambda x: x&gt;0, [-1,2,-3,4])</code>"],
+        ]
+      },
+      { type:"tips", items:[
+        { k:"good", icon:"🎓", html:"<strong>You've covered the full course!</strong> Functions, variables, conditionals, loops, exceptions, libraries, unit tests, file I/O, regex, OOP, and beyond. Keep building projects — that's how programming truly sticks." },
+        { k:"info", icon:"📖", html:"Continue learning at <strong>docs.python.org</strong> and <strong>cs50.harvard.edu/python</strong>." },
+      ]},
+    ]
+  },
+];
+
+/* ── RENDER FLOW ── */
+function makeFlow(steps) {
+  const bw = 100, gap = 32, h = 80, pad = 10;
+  const W = steps.length * bw + (steps.length - 1) * gap + pad * 2;
+  let s = `<svg class="flow" viewBox="0 0 ${W} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:${W}px;">`;
+  steps.forEach((st, i) => {
+    const x = pad + i * (bw + gap);
+    const lines = st.l.split('\n');
+    s += `<rect x="${x}" y="8" width="${bw}" height="${h-16}" rx="5" fill="${st.fill}"/>`;
+    const cy = lines.length === 1 ? 44 : lines.length === 2 ? 37 : 31;
+    lines.forEach((ln, li) => {
+      s += `<text x="${x+bw/2}" y="${cy+li*15}" text-anchor="middle" font-size="10.5" font-family="system-ui,sans-serif" fill="${st.tc}" font-weight="600">${ln}</text>`;
+    });
+    if (i < steps.length - 1) {
+      const ax = x + bw + 2, bx = ax + gap - 6;
+      s += `<line x1="${ax}" y1="${h/2}" x2="${bx}" y2="${h/2}" stroke="#ced4da" stroke-width="1.5"/>`;
+      s += `<polygon points="${bx},${h/2-4} ${bx+6},${h/2} ${bx},${h/2+4}" fill="#ced4da"/>`;
+    }
+  });
+  return s + '</svg>';
+}
+
+/* ── RENDER INTERACTIVE ── */
+function makeInteractive(id) {
+  if (id === 'cond_demo') return `
+    <div class="demo-box">
+      <div class="demo-topbar">&#9654; Try it — temperature checker</div>
+      <div class="demo-body">
+        <div class="demo-row">
+          <span class="demo-lbl">Temperature:</span>
+          <input type="number" id="ti" value="22"> <span class="demo-lbl">°C</span>
+        </div>
+        <div class="demo-output" id="to">Click "Run" to see which condition matches</div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="runCond()">Run</button>
+          <button class="btn" onclick="document.getElementById('ti').value=35;runCond()">35°C</button>
+          <button class="btn" onclick="document.getElementById('ti').value=8;runCond()">8°C</button>
+          <button class="btn" onclick="document.getElementById('ti').value=-5;runCond()">-5°C</button>
+        </div>
+      </div>
+    </div>`;
+  if (id === 'loop_demo') return `
+    <div class="demo-box">
+      <div class="demo-topbar">&#9654; Try it — for loop with range()</div>
+      <div class="demo-body">
+        <div class="demo-row">
+          <span class="demo-lbl" style="font-family:'Courier New',Consolas,monospace">range(</span>
+          <input type="number" id="ls" value="1" min="0" max="20">
+          <span class="demo-lbl" style="font-family:'Courier New',Consolas,monospace">,</span>
+          <input type="number" id="le" value="6" min="1" max="20">
+          <span class="demo-lbl" style="font-family:'Courier New',Consolas,monospace">)</span>
+        </div>
+        <div class="demo-output" id="lo">Click "Run" to see the output</div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="runLoop()">Run</button>
+          <button class="btn" onclick="document.getElementById('ls').value=0;document.getElementById('le').value=5;runLoop()">range(0,5)</button>
+          <button class="btn" onclick="document.getElementById('ls').value=1;document.getElementById('le').value=11;runLoop()">range(1,11)</button>
+        </div>
+      </div>
+    </div>`;
+  return '';
+}
+
+/* ── RENDER LECTURE ── */
+function renderLec(lec) {
+  let h = `
+    <div class="bc">
+      <a href="#">CS50P</a><span class="bc-sep">›</span>
+      <a href="#">Weeks</a><span class="bc-sep">›</span>
+      Week ${lec.num}
+    </div>
+    <div class="lec-week">Week ${lec.num}</div>
+    <h1 class="lec-title"><em>Week ${lec.num}</em> ${lec.title}</h1>
+    <div class="lec-topics">${lec.topics}</div>
+    <div class="lec-desc">${lec.desc}</div>`;
+
+  lec.sections.forEach(sec => {
+    if (sec.type === 'analogy') {
+      h += `<div class="analogy"><div class="analogy-label">Real-world analogy</div><p>${sec.text}</p></div>`;
+    } else if (sec.type === 'concepts') {
+      h += `<div class="section"><div class="section-title">${sec.title}</div><div class="concept-grid">`;
+      sec.items.forEach(c => h += `<div class="concept-card"><div class="cc-icon">${c.icon}</div><div class="cc-name">${c.name}</div><div class="cc-desc">${c.desc}</div></div>`);
+      h += `</div></div>`;
+    } else if (sec.type === 'flow') {
+      h += `<div class="section"><div class="section-title">${sec.title}</div><div class="flow-container">${makeFlow(sec.steps)}</div></div>`;
+    } else if (sec.type === 'table') {
+      h += `<div class="section"><div class="section-title">${sec.title}</div><div class="table-wrap"><table>
+        <thead><tr>${sec.headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead>
+        <tbody>${sec.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table></div></div>`;
+    } else if (sec.type === 'code') {
+      h += `<div class="section">
+        <p class="code-label-text">${sec.label}</p>
+        <div class="code-wrap">
+          <div class="code-header">
+            <div class="code-dot" style="background:#ff5f56"></div>
+            <div class="code-dot" style="background:#ffbd2e"></div>
+            <div class="code-dot" style="background:#27c93f"></div>
+            <span class="code-filename">${sec.file}</span>
+          </div>
+          <pre class="code-block">${sec.code}</pre>
+        </div>
+      </div>`;
+    } else if (sec.type === 'tips') {
+      h += `<div class="section">`;
+      sec.items.forEach(t => h += `<div class="tip ${t.k}"><div class="tip-icon">${t.icon}</div><div class="tip-body">${t.html}</div></div>`);
+      h += `</div>`;
+    } else if (sec.type === 'interactive') {
+      h += `<div class="section">${makeInteractive(sec.id)}</div>`;
+    }
+  });
+  return h;
+}
+
+/* ── BUILD UI ── */
+function build() {
+  const nav  = document.getElementById('nav-list');
+  const cont = document.getElementById('content');
+
+  lectures.forEach((lec, i) => {
+    // nav item
+    const ni = document.createElement('div');
+    ni.className = 'nav-item' + (i===0?' active':'');
+    ni.innerHTML = `<div class="nav-num">${lec.num}</div><div class="nav-text">${lec.title}</div>`;
+    ni.onclick = () => {
+      document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.lecture').forEach(x=>x.classList.remove('active'));
+      ni.classList.add('active');
+      document.getElementById('lec'+lec.num).classList.add('active');
+      document.getElementById('main-area').scrollTop = 0;
+      document.getElementById('prog').style.width = Math.round(((i+1)/lectures.length)*100)+'%';
+    };
+    nav.appendChild(ni);
+
+    // lecture div
+    const d = document.createElement('div');
+    d.className = 'lecture'+(i===0?' active':'');
+    d.id = 'lec'+lec.num;
+    d.innerHTML = renderLec(lec);
+    cont.appendChild(d);
+  });
+}
+
+window.runCond = () => {
+  const t = parseInt(document.getElementById('ti').value)||0;
+  let branch;
+  if(t>30) branch=`if temp > 30:\n    print("It's hot! Stay hydrated.")  # ← this runs`;
+  else if(t>15) branch=`elif temp > 15:\n    print("Nice weather for a walk.")  # ← this runs`;
+  else if(t>0)  branch=`elif temp > 0:\n    print("A bit chilly — bring a jacket.")  # ← this runs`;
+  else          branch=`else:\n    print("It's freezing! Stay inside.")  # ← this runs`;
+  document.getElementById('to').textContent = `temp = ${t}\n\n${branch}`;
+};
+
+window.runLoop = () => {
+  const s=parseInt(document.getElementById('ls').value)||0;
+  const e=parseInt(document.getElementById('le').value)||5;
+  if(e-s>20){document.getElementById('lo').textContent='Keep the range under 20 items.';return;}
+  const vals=[]; for(let i=s;i<e;i++) vals.push(i);
+  document.getElementById('lo').textContent=`for i in range(${s}, ${e}):\n    print(i)\n\nOutput: ${vals.join(', ')}`;
+};
+
+build();
+
+// make main scrollable with correct height
+const mainEl = document.querySelector('.main');
+mainEl.id = 'main-area';
+mainEl.style.height = 'calc(100vh - 52px)';
+mainEl.style.overflowY = 'auto';
+</script>
+</body>
+</html>
